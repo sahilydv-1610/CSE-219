@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        a:link{
+            color: red;
+        }
+        a:hover{
+            color: yellow;
+        }
+        a:active{
+            color: aqua;
+        }
+        a:visited{
+            color: blue;
+        }
+        p::first-line{
+            color: red;
+        }
+        p::after{
+            content: url(images.jpg);
+        }
+    </style>
+</head>
+<body>
+
+    <img src="images.jpg" usemap="#im" height="500px">
+    <map name="im">
+        <area shape="rect" coords="20,40,90,120" href="#">
+        </map>
+        <a href="random.html">Click</a>     
+        <p>
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Unde, asperiores.
+        </p>
+</body>
+</html>
