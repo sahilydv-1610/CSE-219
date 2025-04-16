@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketHub - My Bookings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Your existing styles */
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #3a7bc8;
+            --secondary: #2c3e50;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a90e2;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #4a90e2;
+        }
+        
+        .auth-buttons .btn {
+            margin-left: 15px;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-login {
+            color: #4a90e2;
+            border: 1px solid #4a90e2;
+        }
+        
+        .btn-login:hover {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-signup {
+            background-color: #4a90e2;
+            color: white;
+            border: 1px solid #4a90e2;
+        }
+        
+        .btn-signup:hover {
+            background-color: #3a7bc8;
+            border-color: #3a7bc8;
+        }
+
+        .my-bookings {
+            margin-top: 40px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .bookings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .bookings-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .booking-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .booking-info {
+            flex: 1;
+        }
+        
+        .booking-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .booking-meta {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .booking-id {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-view {
+            padding: 8px 15px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-download {
+            padding: 8px 15px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .no-bookings {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+        }
+
+        /* Ticket Preview Modal */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            overflow-y: auto;
+        }
+        
+        .preview-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 800px;
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .preview-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .preview-close:hover {
+            color: #333;
+        }
+        
+        /* Ticket Preview Styles */
+        .ticket-preview {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .ticket-header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .ticket-body {
+            padding: 20px;
+        }
+        
+        .ticket-footer {
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .ticket-qr {
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        .ticket-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .ticket-info {
+            flex: 1;
+        }
+        
+        .ticket-meta {
+            margin-top: 10px;
+        }
+        
+        .ticket-seats {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .ticket-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .btn-download-ticket {
+            padding: 12px 25px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        footer {
+            background-color: var(--secondary);
+            color: rgb(255, 255, 255);
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.125rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--primary);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .social-links-footer {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links-footer a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .social-links-footer a:hover {
+            background-color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #bbb;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-ticket-alt"></i>
+                    TicketHub
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="events.html" class="active">Events</a></li>
+                    <li><a href="concerts.html">Concerts</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="theater.html">Theater</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="View My Ticket.html">View My Tickets</a></li>
+                </ul>
+                
+                <div class="auth-buttons">
+                    <a href="Login.html" class="btn btn-login">Login</a>
+                    <a href="register.html" class="btn btn-signup">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="my-bookings">
+            <div class="bookings-header">
+                <h2 class="bookings-title"><i class="fas fa-ticket-alt"></i> My Booked Tickets</h2>
+                <button class="btn" onclick="refreshBookings()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            
+            <div id="bookingsList">
+                <!-- Bookings will be loaded here -->
+                <div class="no-bookings">
+                    <i class="fas fa-ticket-alt" style="font-size: 40px; margin-bottom: 15px;"></i>
+                    <p>You haven't booked any tickets yet.</p>
+                    <button class="btn btn-primary" onclick="showContent('movies')" style="margin-top: 15px;">
+                        <i class="fas fa-film"></i> Browse Events
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Preview Modal -->
+    <div id="ticketPreviewModal" class="preview-modal">
+        <div class="preview-content">
+            <span class="preview-close" onclick="closePreview()">&times;</span>
+            
+            <div class="ticket-preview">
+                <div class="ticket-header">
+                    <h1 style="margin: 0;">TicketHub</h1>
+                    <p style="margin: 5px 0 0; font-size: 14px;">Your Entertainment Booking Partner</p>
+                </div>
+                
+                <div class="ticket-body">
+                    <div class="ticket-details">
+                        <div class="ticket-info">
+                            <h2 id="previewEvent" style="margin: 0 0 10px; color: #333;">Event Name</h2>
+                            <div class="ticket-meta">
+                                <p id="previewDateTime" style="margin: 5px 0; color: #666;">
+                                    <i class="far fa-calendar-alt"></i> Date & Time
+                                </p>
+                                <p id="previewVenue" style="margin: 5px 0; color: #666;">
+                                    <i class="fas fa-map-marker-alt"></i> Venue
+                                </p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <p id="previewBookingId" style="margin: 0 0 10px; font-size: 12px; color: #999;">
+                                Booking ID: ########
+                            </p>
+                            <div style="background-color: #f0f0f0; padding: 5px 10px; border-radius: 5px; display: inline-block;">
+                                <p id="previewStatus" style="margin: 0; color: #4CAF50; font-weight: bold;">
+                                    Confirmed
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ticket-seats">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <p style="margin: 5px 0; font-weight: bold; color: #666;">Ticket Type</p>
+                                <p id="previewTicketType" style="margin: 5px 0;">Standard</p>
+                            </div>
+                            <div>
+                                <p style="margin: 5px 0; font-weight: bold; color: #666;">Seats</p>
+                                <p id="previewSeats" style="margin: 5px 0;">A1, A2</p>
+                            </div>
+                            <div>
+                                <p style="margin: 5px 0; font-weight: bold; color: #666;">Amount Paid</p>
+                                <p id="previewAmount" style="margin: 5px 0;">₹0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div class="ticket-qr">
+                            <img src="QR.jpg" style="height: 150px; width: 150px;">
+                        </div>
+                        <p style="color: #666; font-size: 14px;">
+                            Scan this code at the venue for entry
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h3 style="margin-bottom: 10px; color: #333;">Important Information</h3>
+                        <ul style="padding-left: 20px; margin: 0; color: #666;">
+                            <li>Please arrive at least 30 minutes before the show</li>
+                            <li>Carry a valid ID proof matching the booking name</li>
+                            <li>Tickets are non-refundable and non-transferable</li>
+                            <li>Children under 3 years are not allowed</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="ticket-footer">
+                    <p style="margin: 0;">This is an electronically generated ticket. No print required.</p>
+                </div>
+            </div>
+            
+            <div class="ticket-actions">
+                <button class="btn-download-ticket" onclick="downloadTicket()">
+                    <i class="fas fa-download"></i> Download Ticket
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>TicketHub</h3>
+                    <p>Your one-stop destination for booking tickets to all your favorite events, concerts, and sports.</p>
+                    <div class="social-links-footer">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="concerts.html">Concerts</a></li>
+                        <li><a href="sports.html">Sports</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="contact.html">FAQs</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Ticket Street, Event City</li>
+                        <li><i class="fas fa-phone"></i> +1 (800) 555-1234</li>
+                        <li><i class="fas fa-envelope"></i> support@tickethub.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 TicketHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+        
+        // Sample booking data
+        const sampleBookings = [
+            {
+                id: "TICKET789012",
+                event: "JAAT",
+                date: "Today, 8:00 PM",
+                venue: "PVR Cinemas, Jalandhar, Punjab",
+                seats: ["A3", "A4"],
+                type: "Premium",
+                amount: "₹944.00",
+                status: "Confirmed"
+            },
+            {
+                id: "TICKET345678",
+                event: "The Lion King Musical",
+                date: "Tomorrow, 2:00 PM",
+                venue: "Nita Mukesh Ambani Center",
+                seats: ["B5", "B6", "B7"],
+                type: "Standard",
+                amount: "₹1770.00",
+                status: "Confirmed"
+            },
+            {
+                id: "TICKET046474",
+                event: "Jocker",
+                date: "18/March/2025, 8:00 AM",
+                venue: "PVR Cinemas, Saket, Delhi",
+                seats: ["B2","B3"],
+                type: "Standard",
+                amount: "₹1499.00",
+                status: "Confirmed"
+            },
+            {
+                id: "TICKET093784",
+                event: "Avengers: Endgame",
+                date: "13/April/2025, 8:00 AM",
+                venue: "INOX Cinemas, Jalandhar, Punjab",
+                seats: ["B2","B3"],
+                type: "Standard",
+                amount: "₹1499.00",
+                status: "Confirmed"
+            },
+            {
+                id: "TICKET098482",
+                event: "Hum Tum Sath Sath h",
+                date: "13/April/2025, 8:00 AM",
+                venue: "INOX Cinemas, Jalandhar, Punjab",
+                seats: ["B9","B10"],
+                type: "Standard",
+                amount: "₹1699.00",
+                status: "Confirmed"
+            }
+        ];
+
+        // Current booking for preview/download
+        let currentBooking = null;
+
+        // Load bookings when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBookings();
+        });
+
+        // Function to load bookings
+        function loadBookings() {
+            const bookingsList = document.getElementById('bookingsList');
+            
+            if (sampleBookings.length === 0) {
+                return;
+            }
+            
+            bookingsList.innerHTML = '';
+            
+            sampleBookings.forEach(booking => {
+                const bookingCard = document.createElement('div');
+                bookingCard.className = 'booking-card';
+                
+                bookingCard.innerHTML = `
+                    <div class="booking-info">
+                        <div class="booking-title">${booking.event}</div>
+                        <div class="booking-meta">
+                            <span><i class="far fa-calendar-alt"></i> ${booking.date}</span>
+                            <span style="margin-left: 15px;"><i class="fas fa-map-marker-alt"></i> ${booking.venue}</span>
+                        </div>
+                        <div class="booking-meta">
+                            <span><i class="fas fa-chair"></i> ${booking.seats.join(', ')}</span>
+                            <span style="margin-left: 15px;"><i class="fas fa-tag"></i> ${booking.type}</span>
+                        </div>
+                        <div class="booking-id">Booking ID: ${booking.id}</div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn-view" onclick="viewTicket('${booking.id}')">
+                            <i class="far fa-eye"></i> View
+                        </button>
+                        <button class="btn-download" onclick="viewTicket('${booking.id}')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                `;
+                
+                bookingsList.appendChild(bookingCard);
+            });
+        }
+
+        // Function to view ticket in preview modal
+        function viewTicket(bookingId) {
+            const booking = sampleBookings.find(b => b.id === bookingId);
+            if (!booking) return;
+
+            currentBooking = booking;
+
+            // Set preview content
+            document.getElementById('previewEvent').textContent = booking.event;
+            document.getElementById('previewDateTime').innerHTML = `<i class="far fa-calendar-alt"></i> ${booking.date}`;
+            document.getElementById('previewVenue').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${booking.venue}`;
+            document.getElementById('previewBookingId').textContent = `Booking ID: ${booking.id}`;
+            document.getElementById('previewStatus').textContent = booking.status;
+            document.getElementById('previewTicketType').textContent = booking.type;
+            document.getElementById('previewSeats').textContent = booking.seats.join(', ');
+            document.getElementById('previewAmount').textContent = booking.amount;
+
+            // Show preview modal
+            document.getElementById('ticketPreviewModal').style.display = 'block';
+        }
+
+        // Function to close preview modal
+        function closePreview() {
+            document.getElementById('ticketPreviewModal').style.display = 'none';
+            currentBooking = null;
+        }
+
+        // Function to download ticket as PDF
+        function downloadTicket() {
+            if (!currentBooking) return;
+
+            // Create a new PDF document
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [210, 297] // A4 size
+            });
+
+            // Set document properties
+            doc.setProperties({
+                title: `Ticket - ${currentBooking.event}`,
+                subject: 'Event Ticket',
+                author: 'TicketHub',
+                keywords: 'ticket, event, booking',
+                creator: 'TicketHub'
+            });
+
+            // Add TicketHub logo (text in this case)
+            doc.setFontSize(22);
+            doc.setTextColor(74, 144, 226); // #4a90e2
+            doc.text('TicketHub', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Your Entertainment Booking Partner', 105, 26, { align: 'center' });
+
+            // Add event details
+            doc.setFontSize(18);
+            doc.setTextColor(0, 0, 0);
+            doc.text(currentBooking.event, 20, 40);
+
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Date & Time: ${currentBooking.date}`, 20, 48);
+            doc.text(`Venue: ${currentBooking.venue}`, 20, 54);
+
+            // Add booking ID and status
+            doc.setFontSize(10);
+            doc.text(`Booking ID: ${currentBooking.id}`, 160, 40);
+            doc.setFillColor(74, 144, 226);
+            doc.setTextColor(255, 255, 255);
+            doc.roundedRect(160, 44, 40, 8, 2, 2, 'F');
+            doc.text(currentBooking.status, 180, 49, { align: 'center' });
+
+            // Add ticket details
+            doc.setDrawColor(200, 200, 200);
+            doc.line(20, 60, 190, 60);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Ticket Type', 30, 70);
+            doc.text('Seats', 105, 70);
+            doc.text('Amount Paid', 170, 70);
+
+            doc.setFontSize(14);
+            doc.text(currentBooking.type, 30, 78);
+            doc.text(currentBooking.seats.join(', '), 105, 78);
+            doc.text(currentBooking.amount, 170, 78);
+
+            doc.line(20, 85, 190, 85);
+
+            // Add QR code placeholder
+            doc.setFillColor(240, 240, 240);
+            doc.rect(140, 90, 50, 50, 'F');
+            doc.setTextColor(150, 150, 150);
+            doc.img('QR Code', 165, 115, { align: 'center' });
+
+            // Add important information
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Important Information', 20, 100);
+
+            const importantInfo = [
+                'Please arrive at least 30 minutes before the show',
+                'Carry a valid ID proof matching the booking name',
+                'Tickets are non-refundable and non-transferable',
+                'Children under 3 years are not allowed'
+            ];
+
+            doc.setFontSize(10);
+            importantInfo.forEach((info, index) => {
+                doc.text(`• ${info}`, 25, 110 + (index * 5));
+            });
+
+            // Add footer
+            doc.setFontSize(10);
+            doc.setTextColor(150, 150, 150);
+            doc.text('Thank you for booking with TicketHub', 105, 180, { align: 'center' });
+            doc.text('For any queries, contact support@tickethub.com', 105, 185, { align: 'center' });
+            doc.text('This is an electronically generated ticket. No print required.', 105, 190, { align: 'center' });
+
+            // Save the PDF
+            doc.save(`TicketHub_${currentBooking.id}.pdf`);
+            
+            // Close the preview modal after download
+            closePreview();
+        }
+
+        // Function to refresh bookings
+        function refreshBookings() {
+            alert("Refreshing bookings...");
+            loadBookings();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('ticketPreviewModal');
+            if (event.target === modal) {
+                closePreview();
+            }
+        }
+
+        function showContent(section) {
+            // Your existing implementation
+        }
+    </script>
+</body>
+</html>

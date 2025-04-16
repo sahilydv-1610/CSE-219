@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed | TicketHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a90e2;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #4a90e2;
+        }
+        
+        .auth-buttons .btn {
+            margin-left: 15px;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-login {
+            color: #4a90e2;
+            border: 1px solid #4a90e2;
+        }
+        
+        .btn-login:hover {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-signup {
+            background-color: #4a90e2;
+            color: white;
+            border: 1px solid #4a90e2;
+        }
+        
+        .btn-signup:hover {
+            background-color: #3a7bc8;
+            border-color: #3a7bc8;
+        }
+        
+        /* Confirmation Hero */
+        .confirmation-hero {
+            background-color: #4a90e2;
+            color: white;
+            text-align: center;
+            padding: 80px 0;
+            margin-bottom: 60px;
+        }
+        
+        .confirmation-hero i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        
+        .confirmation-hero h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .confirmation-hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        /* Confirmation Details */
+        .confirmation-container {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        .confirmation-details {
+            flex: 2;
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .confirmation-summary {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            align-self: flex-start;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #333;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background-color: #4a90e2;
+        }
+        
+        /* Ticket Details */
+        .ticket-details {
+            margin-bottom: 40px;
+        }
+        
+        .event-image {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+        
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .event-title {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+        
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .event-meta-item i {
+            margin-right: 10px;
+            color: #4a90e2;
+            font-size: 20px;
+        }
+        
+        /* Order Information */
+        .order-info {
+            margin-bottom: 40px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .info-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .info-card h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .info-card p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        /* Tickets List */
+        .tickets-list {
+            margin-bottom: 40px;
+        }
+        
+        .ticket-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .ticket-info {
+            flex: 2;
+        }
+        
+        .ticket-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .ticket-description {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .ticket-qty {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .ticket-price {
+            flex: 1;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+            font-size: 18px;
+            font-weight: 700;
+            border-top: 2px solid #eee;
+            margin-top: 20px;
+        }
+        
+        /* Download Options */
+        .download-options {
+            margin-bottom: 40px;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .download-btn {
+            padding: 12px 25px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .download-btn:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .download-btn.secondary {
+            background-color: #f1f5f9;
+            color: #333;
+        }
+        
+        .download-btn.secondary:hover {
+            background-color: #e1e5e9;
+        }
+        
+        /* Confirmation Summary */
+        .confirmation-number {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .confirmation-number h3 {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        .confirmation-number p {
+            font-size: 20px;
+            font-weight: 700;
+            color: #4a90e2;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .summary-item.total {
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Next Steps */
+        .next-steps {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 80px;
+            text-align: center;
+        }
+        
+        .next-steps h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        .next-steps p {
+            max-width: 700px;
+            margin: 0 auto 30px;
+            color: #555;
+        }
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .step-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #4a90e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .step-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #222;
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #4a90e2;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: #4a90e2;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #bbb;
+            font-size: 14px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 0;
+            }
+            
+            .nav-links {
+                margin: 20px 0;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0 10px;
+            }
+            
+            .confirmation-hero h1 {
+                font-size: 36px;
+            }
+            
+            .confirmation-hero p {
+                font-size: 18px;
+            }
+            
+            .confirmation-container {
+                flex-direction: column;
+            }
+            
+            .confirmation-summary {
+                position: static;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+            
+            .download-btn {
+                justify-content: center;
+            }
+            
+            .ticket-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .ticket-qty, .ticket-price {
+                text-align: left;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-ticket-alt"></i>
+                    TicketHub
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="concerts.html">Concerts</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="theater.html">Theater</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="View My Ticket.html">View My Tickets</a></li>
+                </ul>
+                
+                <div class="auth-buttons">
+                    <a href="Login.html" class="btn btn-login">Login</a>
+                    <a href="register.html" class="btn btn-signup">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Confirmation Hero -->
+    <section class="confirmation-hero">
+        <div class="container">
+            <i class="fas fa-check-circle"></i>
+            <h1>Your Booking is Confirmed!</h1>
+            <p>Thank you for your purchase. Your tickets and receipt have been sent to your email.</p>
+        </div>
+    </section>
+    
+    <!-- Confirmation Details -->
+    <div class="container confirmation-container">
+        <!-- Confirmation Details -->
+        <div class="confirmation-details">
+            <!-- Ticket Details -->
+            <div class="ticket-details">
+                <h2 class="section-title">Your Tickets</h2>
+                
+                <div class="event-image">
+                    <img src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Hamilton">
+                </div>
+                
+                <h3 class="event-title">Hamilton</h3>
+                
+                <div class="event-meta">
+                    <div class="event-meta-item">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Saturday, June 15, 2023</span>
+                    </div>
+                    <div class="event-meta-item">
+                        <i class="far fa-clock"></i>
+                        <span>7:30 PM</span>
+                    </div>
+                    <div class="event-meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Richard Rodgers Theatre, NY</span>
+                    </div>
+                    <div class="event-meta-item">
+                        <i class="fas fa-chair"></i>
+                        <span>Box Seats (Section B, Row 5)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Information -->
+            <div class="order-info">
+                <h2 class="section-title">Order Information</h2>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Booking Reference</h3>
+                        <p>THB-78945612</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Order Date</h3>
+                        <p>June 10, 2023 at 2:45 PM</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Payment Method</h3>
+                        <p>VISA ending in 4242</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Email Confirmation</h3>
+                        <p>sent to john.doe@example.com</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tickets List -->
+            <div class="tickets-list">
+                <h2 class="section-title">Order Summary</h2>
+                
+                <div class="ticket-item">
+                    <div class="ticket-info">
+                        <div class="ticket-name">Standard Admission</div>
+                        <div class="ticket-description">General admission ticket</div>
+                    </div>
+                    <div class="ticket-qty">2</div>
+                    <div class="ticket-price">$179.98</div>
+                </div>
+                
+                <div class="ticket-item">
+                    <div class="ticket-info">
+                        <div class="ticket-name">VIP Experience</div>
+                        <div class="ticket-description">Premium seating with lounge access</div>
+                    </div>
+                    <div class="ticket-qty">1</div>
+                    <div class="ticket-price">$149.99</div>
+                </div>
+                
+                <div class="ticket-item">
+                    <div class="ticket-info">
+                        <div class="ticket-name">Box Seats Upgrade</div>
+                        <div class="ticket-description">Premium seating section</div>
+                    </div>
+                    <div class="ticket-qty">1</div>
+                    <div class="ticket-price">$50.00</div>
+                </div>
+                
+                <div class="ticket-item">
+                    <div class="ticket-info">
+                        <div class="ticket-name">Service Fee</div>
+                        <div class="ticket-description">Processing and handling</div>
+                    </div>
+                    <div class="ticket-qty">-</div>
+                    <div class="ticket-price">$12.50</div>
+                </div>
+                
+                <div class="order-total">
+                    <span>Total Paid</span>
+                    <span>$392.47</span>
+                </div>
+            </div>
+            
+            <!-- Download Options -->
+            <div class="download-options">
+                <h2 class="section-title">Download Your Tickets</h2>
+                <p>Your tickets are also available in your TicketHub account and have been emailed to you.</p>
+                
+                <div class="download-buttons">
+                    <button class="download-btn">
+                        <i class="fas fa-download"></i> Download PDF Tickets
+                    </button>
+                    <button class="download-btn secondary">
+                        <i class="fas fa-mobile-alt"></i> Add to Apple Wallet
+                    </button>
+                    <button class="download-btn secondary">
+                        <i class="fas fa-envelope"></i> Resend Email
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Confirmation Summary -->
+        <div class="confirmation-summary">
+            <div class="confirmation-number">
+                <h3>Confirmation Number</h3>
+                <p>THB-78945612</p>
+            </div>
+            
+            <h3 class="section-title">Order Summary</h3>
+            
+            <div class="summary-item">
+                <span>Tickets (3)</span>
+                <span>$329.97</span>
+            </div>
+            <div class="summary-item">
+                <span>Upgrades</span>
+                <span>$50.00</span>
+            </div>
+            <div class="summary-item">
+                <span>Fees</span>
+                <span>$12.50</span>
+            </div>
+            <div class="summary-item total">
+                <span>Total</span>
+                <span>$392.47</span>
+            </div>
+            
+            <h3 class="section-title" style="margin-top: 30px;">Need Help?</h3>
+            <p style="margin-bottom: 20px;">Contact our customer support if you have any questions about your order.</p>
+            
+            <button class="download-btn" style="width: 100%;">
+                <i class="fas fa-headset"></i> Contact Support
+            </button>
+        </div>
+    </div>
+    
+    <!-- Next Steps -->
+    <section class="next-steps">
+        <div class="container">
+            <h2>What's Next?</h2>
+            <p>Here's what you need to know about your upcoming event</p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3 class="step-title">Your Tickets</h3>
+                    <p>Present your tickets at the venue entrance. You can print them or show them on your mobile device.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="step-title">Arrival Time</h3>
+                    <p>Doors open 1 hour before the show. We recommend arriving at least 30 minutes early.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h3 class="step-title">Venue Information</h3>
+                    <p>Richard Rodgers Theatre has a strict no latecomers policy. Review the venue's policies before you go.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>TicketHub</h3>
+                    <p>Your one-stop destination for booking tickets to all your favorite events.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Categories</h3>
+                    <ul>
+                        <li><a href="concert.html">Concerts</a></li>
+                        <li><a href="sports.html">Sports</a></li>
+                        <li><a href="theater.html">Theater</a></li>
+                        <li><a href="#">Comedy</a></li>
+                        <li><a href="#">Family</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Event Street, NY</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@tickethub.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 TicketHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // In a real application, this would include functionality to:
+        // - Download tickets as PDF
+        // - Add to Apple/Google Wallet
+        // - Resend confirmation email
+        // - Contact support
+        
+        document.querySelectorAll('.download-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.textContent.includes('Download')) {
+                    alert('Your tickets are being prepared for download...');
+                    // In a real app, this would generate and download a PDF
+                } else if (this.textContent.includes('Apple')) {
+                    alert('Adding tickets to Apple Wallet...');
+                } else if (this.textContent.includes('Resend')) {
+                    alert('Confirmation email has been resent!');
+                } else if (this.textContent.includes('Contact')) {
+                    alert('Redirecting to customer support...');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

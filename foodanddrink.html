@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketHub - Food & Drinks Booking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a90e2;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #4a90e2;
+        }
+        
+        .auth-buttons .btn {
+            margin-left: 15px;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-login {
+            color: #4a90e2;
+            border: 1px solid #4a90e2;
+        }
+        
+        .btn-login:hover {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-signup {
+            background-color: #4a90e2;
+            color: white;
+            border: 1px solid #4a90e2;
+        }
+        
+        .btn-signup:hover {
+            background-color: #3a7bc8;
+            border-color: #3a7bc8;
+        }
+        
+        
+        /* Menu Selection Section */
+        .menu-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .section-title h2 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .menu-categories {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .menu-category {
+            padding: 10px 20px;
+            margin: 0 10px 10px;
+            background-color: #f0f7ff;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 1px solid #4a90e2;
+        }
+        
+        .menu-category.active {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .menu-item {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            border: 1px solid #eee;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .menu-item-img {
+            height: 160px;
+            overflow: hidden;
+        }
+        
+        .menu-item-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .menu-item-info {
+            padding: 15px;
+        }
+        
+        .menu-item-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .menu-item-price {
+            font-weight: 700;
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            margin: 0 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        
+        /* Order Summary Section */
+        .order-summary {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .order-items {
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-total {
+            text-align: right;
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 2px solid #4a90e2;
+        }
+        
+        /* Payment Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 500px;
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+        }
+        
+        /* UPI Payment Section */
+        .upi-payment {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .upi-id {
+            font-size: 16px;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .payment-instructions {
+            font-size: 14px;
+            color: #666;
+            margin-top: 15px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* footer */
+        footer {
+            background-color: #222;
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #4a90e2;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: #4a90e2;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #bbb;
+            font-size: 14px;
+        }
+        
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .menu-categories {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .menu-category {
+                margin-bottom: 10px;
+            }
+            
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-ticket-alt"></i>
+                    TicketHub
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="events.html" class="active">Events</a></li>
+                    <li><a href="concerts.html">Concerts</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="theater.html">Theater</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="View My Ticket.html">View My Tickets</a></li>
+                </ul>
+                
+                <div class="auth-buttons">
+                    <a href="Login.html" class="btn btn-login">Login</a>
+                    <a href="register.html" class="btn btn-signup">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Menu Selection Section -->
+        <section class="menu-section">
+            <div class="section-title">
+                <h2>Food & Drinks Menu</h2>
+                <p>Select your preferred meals and beverages</p>
+            </div>
+            
+            <div class="menu-categories">
+                <div class="menu-category active" onclick="filterMenu('all')">All Items</div>
+                <div class="menu-category" onclick="filterMenu('meal')">Meals</div>
+                <div class="menu-category" onclick="filterMenu('drink')">Drinks</div>
+                <div class="menu-category" onclick="filterMenu('combo')">Combos</div>
+            </div>
+            
+            <div class="menu-items" id="menuItems">
+                <!-- Menu items will be dynamically inserted here -->
+            </div>
+        </section>
+        
+        <!-- Order Summary Section -->
+        <section class="order-summary">
+            <h2>Your Order Summary</h2>
+            <div class="order-items" id="orderItems">
+                <!-- Order items will be dynamically inserted here -->
+                <p style="text-align: center; color: #777;">No items selected yet</p>
+            </div>
+            <div class="order-total">
+                Total: ₹<span id="totalAmount">0.00</span>
+            </div>
+            <button id="checkoutBtn" class="btn btn-primary btn-block" disabled>
+                <i class="fas fa-qrcode"></i> Pay via UPI
+            </button>
+        </section>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2><i class="fas fa-qrcode"></i> UPI Payment</h2>
+            <p>Scan the QR code or use the UPI ID below to complete your payment</p>
+            
+            <div class="upi-payment">
+                <div class="qr-code">
+                    <img id="dynamicQrCode" src="QR.jpg" alt="UPI QR Code">
+                </div>
+                
+                <div class="upi-id">
+                    <strong>UPI ID:</strong> tickethub.food@upi
+                </div>
+                
+                <div class="payment-instructions">
+                    <p>1. Open any UPI app on your phone</p>
+                    <p>2. Scan the QR code or enter the UPI ID</p>
+                    <p>3. Confirm the payment of ₹<span id="paymentAmount">0.00</span></p>
+                </div>
+                
+                <button id="confirmPaymentBtn" class="btn btn-primary">
+                    <i class="fas fa-check-circle"></i> Payment Completed
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <span class="close-btn">&times;</span>
+            <div style="font-size: 60px; color: #4CAF50; margin: 20px 0;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Payment Successful!</h2>
+            <p>Your food order has been confirmed.</p>
+            <p><strong>Order ID:</strong> <span id="orderId">TH-FOOD-12345</span></p>
+            <p>We've sent the details to your email.</p>
+            <button id="closeConfirmationBtn" class="btn btn-primary" style="margin-top: 20px;">
+                <i class="fas fa-thumbs-up"></i> Done
+            </button>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>TicketHub</h3>
+                    <p>Your one-stop destination for booking tickets to all your favorite events.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Categories</h3>
+                    <ul>
+                        <li><a href="concert.html">Concerts</a></li>
+                        <li><a href="sports.html">Sports</a></li>
+                        <li><a href="theater.html">Theater</a></li>
+                        <li><a href="#">Comedy</a></li>
+                        <li><a href="#">Family</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Event Street, NY</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@tickethub.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 TicketHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Menu Data
+        const menuItems = [
+            { id: 1, name: "Veg Thali", category: "meal", price: 250, image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 2, name: "Non-Veg Thali", category: "meal", price: 350, image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 3, name: "Pizza", category: "meal", price: 200, image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 4, name: "Burger", category: "meal", price: 120, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 5, name: "Soft Drink", category: "drink", price: 50, image: "https://images.unsplash.com/photo-1554866585-cd94860890b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 6, name: "Fresh Juice", category: "drink", price: 80, image: "https://images.unsplash.com/photo-1603569283847-aa295f0d016a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 7, name: "Meal Combo", category: "combo", price: 300, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 8, name: "Snack Combo", category: "combo", price: 180, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" }
+        ];
+
+        // Current Order
+        let currentOrder = [];
+        
+        // DOM Elements
+        const menuItemsContainer = document.getElementById('menuItems');
+        const orderItemsContainer = document.getElementById('orderItems');
+        const totalAmountElement = document.getElementById('totalAmount');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const paymentModal = document.getElementById('paymentModal');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const dynamicQrCode = document.getElementById('dynamicQrCode');
+        const paymentAmountElement = document.getElementById('paymentAmount');
+        const orderIdElement = document.getElementById('orderId');
+        
+        // Initialize the menu
+        function initializeMenu() {
+            menuItemsContainer.innerHTML = '';
+            menuItems.forEach(item => {
+                const menuItemElement = document.createElement('div');
+                menuItemElement.className = 'menu-item';
+                menuItemElement.dataset.category = item.category;
+                menuItemElement.innerHTML = `
+                    <div class="menu-item-img">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="menu-item-info">
+                        <h3 class="menu-item-title">${item.name}</h3>
+                        <div class="menu-item-price">₹${item.price.toFixed(2)}</div>
+                        <div class="quantity-control">
+                            <button class="quantity-btn" onclick="decreaseQuantity(${item.id})">-</button>
+                            <input type="number" class="quantity-input" id="qty-${item.id}" value="0" min="0" readonly>
+                            <button class="quantity-btn" onclick="increaseQuantity(${item.id})">+</button>
+                        </div>
+                    </div>
+                `;
+                menuItemsContainer.appendChild(menuItemElement);
+            });
+        }
+        
+        // Filter menu by category
+        function filterMenu(category) {
+            // Update active category
+            document.querySelectorAll('.menu-category').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Show/hide menu items
+            const items = document.querySelectorAll('.menu-item');
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Update quantity
+        function increaseQuantity(itemId) {
+            const input = document.getElementById(`qty-${itemId}`);
+            input.value = parseInt(input.value) + 1;
+            updateOrder(itemId, parseInt(input.value));
+        }
+        
+        function decreaseQuantity(itemId) {
+            const input = document.getElementById(`qty-${itemId}`);
+            if (parseInt(input.value) > 0) {
+                input.value = parseInt(input.value) - 1;
+                updateOrder(itemId, parseInt(input.value));
+            }
+        }
+        
+        // Update the current order
+        function updateOrder(itemId, quantity) {
+            // Find the item in menu
+            const item = menuItems.find(i => i.id === itemId);
+            
+            // Remove if quantity is 0
+            if (quantity === 0) {
+                currentOrder = currentOrder.filter(i => i.id !== itemId);
+            } 
+            // Add or update quantity
+            else {
+                const existingItem = currentOrder.find(i => i.id === itemId);
+                if (existingItem) {
+                    existingItem.quantity = quantity;
+                } else {
+                    currentOrder.push({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: quantity
+                    });
+                }
+            }
+            
+            updateOrderSummary();
+        }
+        
+        // Update the order summary
+        function updateOrderSummary() {
+            orderItemsContainer.innerHTML = '';
+            
+            if (currentOrder.length === 0) {
+                orderItemsContainer.innerHTML = '<p style="text-align: center; color: #777;">No items selected yet</p>';
+                checkoutBtn.disabled = true;
+                totalAmountElement.textContent = '0.00';
+                return;
+            }
+            
+            let total = 0;
+            
+            currentOrder.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const orderItemElement = document.createElement('div');
+                orderItemElement.className = 'order-item';
+                orderItemElement.innerHTML = `
+                    <span>${item.name} (${item.quantity}x)</span>
+                    <span>₹${itemTotal.toFixed(2)}</span>
+                `;
+                orderItemsContainer.appendChild(orderItemElement);
+            });
+            
+            // Add GST (5%)
+            const gst = total * 0.05;
+            total += gst;
+            
+            const gstElement = document.createElement('div');
+            gstElement.className = 'order-item';
+            gstElement.innerHTML = `
+                <span>GST (5%)</span>
+                <span>₹${gst.toFixed(2)}</span>
+            `;
+            orderItemsContainer.appendChild(gstElement);
+            
+            totalAmountElement.textContent = total.toFixed(2);
+            checkoutBtn.disabled = false;
+        }
+        
+        // Checkout button click
+        checkoutBtn.addEventListener('click', function() {
+            const totalAmount = parseFloat(totalAmountElement.textContent);
+            paymentAmountElement.textContent = totalAmount.toFixed(2);
+            
+            // Update QR code with current amount
+            dynamicQrCode.src = `QR.jpg`;
+            
+            paymentModal.style.display = 'block';
+        });
+        
+        // Confirm payment button
+        document.getElementById('confirmPaymentBtn').addEventListener('click', function() {
+            paymentModal.style.display = 'none';
+            
+            // Generate random order ID
+            const randomId = 'TH-FOOD-' + Math.floor(10000 + Math.random() * 90000);
+            orderIdElement.textContent = randomId;
+            
+            confirmationModal.style.display = 'block';
+        });
+        
+        // Close buttons
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                paymentModal.style.display = 'none';
+                confirmationModal.style.display = 'none';
+            });
+        });
+        
+        // Close confirmation button
+        document.getElementById('closeConfirmationBtn').addEventListener('click', function() {
+            confirmationModal.style.display = 'none';
+            
+            // Reset the order
+            currentOrder = [];
+            updateOrderSummary();
+            
+            // Reset all quantity inputs
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.value = '0';
+            });
+        });
+        
+        // Initialize the page
+        window.onload = function() {
+            initializeMenu();
+            
+            // Close modals when clicking outside
+            window.onclick = function(event) {
+                if (event.target == paymentModal) {
+                    paymentModal.style.display = 'none';
+                }
+                if (event.target == confirmationModal) {
+                    confirmationModal.style.display = 'none';
+                }
+            }
+        };
+    </script>
+</body>
+</html>

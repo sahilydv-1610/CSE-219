@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theater Events | TicketHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a90e2;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a.active {
+            color: #4a90e2;
+        }
+        
+        .nav-links a:hover {
+            color: #4a90e2;
+        }
+        
+        .auth-buttons .btn {
+            margin-left: 15px;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-login {
+            color: #4a90e2;
+            border: 1px solid #4a90e2;
+        }
+        
+        .btn-login:hover {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-signup {
+            background-color: #4a90e2;
+            color: white;
+            border: 1px solid #4a90e2;
+        }
+        
+        .btn-signup:hover {
+            background-color: #3a7bc8;
+            border-color: #3a7bc8;
+        }
+        
+        /* Hero Section */
+        .theater-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: white;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .theater-hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .theater-hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease 0.3s forwards;
+            opacity: 0;
+        }
+        
+        /* Theater Filter Section */
+        .theater-filter {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: -50px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .filter-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .filter-group select, 
+        .filter-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .filter-button {
+            align-self: flex-end;
+            padding: 10px 25px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-button:hover {
+            background-color: #3a7bc8;
+        }
+        
+        /* Events Section */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: #777;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .event-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .event-img {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .event-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .event-card:hover .event-img img {
+            transform: scale(1.1);
+        }
+        
+        .event-info {
+            padding: 20px;
+        }
+        
+        .event-date {
+            color: #4a90e2;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .event-date i {
+            margin-right: 8px;
+        }
+        
+        .event-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .event-location {
+            color: #777;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .event-location i {
+            margin-right: 8px;
+        }
+        
+        .event-price {
+            font-weight: 700;
+            color: #4a90e2;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-book {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-book:hover {
+            background-color: #3a7bc8;
+        }
+        
+        /* Theater Types Section */
+        .theater-types {
+            background-color: #f1f5f9;
+        }
+        
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .type-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            padding: 30px 20px;
+            transition: transform 0.3s;
+        }
+        
+        .type-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .type-icon {
+            font-size: 40px;
+            color: #4a90e2;
+            margin-bottom: 15px;
+        }
+        
+        .type-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .type-description {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        /* Newsletter Section */
+        .newsletter {
+            background-color: #4a90e2;
+            color: white;
+            text-align: center;
+            padding: 60px 0;
+        }
+        
+        .newsletter h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .newsletter p {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .newsletter-form input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+        }
+        
+        .newsletter-form button {
+            padding: 15px 25px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .newsletter-form button:hover {
+            background-color: #222;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #222;
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #4a90e2;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: #4a90e2;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #bbb;
+            font-size: 14px;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 0;
+            }
+            
+            .nav-links {
+                margin: 20px 0;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0 10px;
+            }
+            
+            .theater-hero h1 {
+                font-size: 36px;
+            }
+            
+            .theater-hero p {
+                font-size: 18px;
+            }
+            
+            .theater-filter {
+                margin-top: 0;
+            }
+            
+            .filter-options {
+                flex-direction: column;
+            }
+            
+            .filter-button {
+                align-self: stretch;
+            }
+            
+            .newsletter-form {
+                flex-direction: column;
+            }
+            
+            .newsletter-form input {
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+            
+            .newsletter-form button {
+                border-radius: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-ticket-alt"></i>
+                    TicketHub
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="concerts.html">Concerts</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="theater.html" class="active">Theater</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="View My Ticket.html">View My Tickets</a></li>
+                </ul>
+                
+                <div class="auth-buttons">
+                    <a href="Login.html" class="btn btn-login">Login</a>
+                    <a href="register.html" class="btn btn-signup">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Theater Hero Section -->
+    <section class="theater-hero">
+        <div class="hero-content">
+            <h1>Experience the Magic of Theater</h1>
+            <p>From Broadway hits to local productions, find the perfect show for your next night out.</p>
+        </div>
+    </section>
+    
+    <!-- Theater Filter Section -->
+    <div class="container">
+        <div class="theater-filter">
+            <h2 class="filter-title">Find Your Perfect Show</h2>
+            <div class="filter-options">
+                <div class="filter-group">
+                    <label for="location">Location</label>
+                    <select id="location">
+                        <option value="">Any Location</option>
+                        <option value="new-york">New York</option>
+                        <option value="los-angeles">Los Angeles</option>
+                        <option value="chicago">Chicago</option>
+                        <option value="london">London</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="genre">Genre</label>
+                    <select id="genre">
+                        <option value="">All Genres</option>
+                        <option value="musical">Musical</option>
+                        <option value="drama">Drama</option>
+                        <option value="comedy">Comedy</option>
+                        <option value="classic">Classic</option>
+                    </select>
+                </div>
+                
+                <button class="filter-button">Filter Shows</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popular Theater Shows Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Featured Theater Productions</h2>
+                <p>Discover the most talked-about shows currently playing</p>
+            </div>
+            
+            <div class="events-grid">
+                <!-- Theater Show 1 -->
+                <div class="event-card">
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1531058020387-3be344556be6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Hamilton">
+                    </div>
+                    <div class="event-info">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i> June 10 - Aug 30, 2023
+                        </div>
+                        <h3 class="event-title">Hamilton</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> Richard Rodgers Theatre, NY
+                        </div>
+                        <div class="event-price">From $129.99</div>
+                        <a href="book ticket.html"><button class="btn-book">Book Tickets</button></a>
+                    </div>
+                </div>
+                
+                <!-- Theater Show 2 -->
+                <div class="event-card">
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1507924538820-ede94a04019d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="The Lion King">
+                    </div>
+                    <div class="event-info">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i> July 1 - Sep 15, 2023
+                        </div>
+                        <h3 class="event-title">The Lion King</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> Minskoff Theatre, NY
+                        </div>
+                        <div class="event-price">From $89.99</div>
+                        <a href="book ticket.html"><button class="btn-book">Book Tickets</button></a>
+                    </div>
+                </div>
+                
+                <!-- Theater Show 3 -->
+                <div class="event-card">
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1549310786-4e5e13a255e1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Wicked">
+                    </div>
+                    <div class="event-info">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i> June 5 - Aug 20, 2023
+                        </div>
+                        <h3 class="event-title">Wicked</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> Gershwin Theatre, NY
+                        </div>
+                        <div class="event-price">From $99.99</div>
+                        <a href="book ticket.html"><button class="btn-book">Book Tickets</button></a>
+                    </div>
+                </div>
+                
+                <!-- Theater Show 4 -->
+                <div class="event-card">
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1514306199707-3fe725b1c613?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Chicago">
+                    </div>
+                    <div class="event-info">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i> June 15 - Sep 10, 2023
+                        </div>
+                        <h3 class="event-title">Chicago</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> Ambassador Theatre, NY
+                        </div>
+                        <div class="event-price">From $79.99</div>
+                        <a href="book ticket.html"><button class="btn-book">Book Tickets</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Theater Types Section -->
+    <section class="section theater-types">
+        <div class="container">
+            <div class="section-title">
+                <h2>Explore Theater Genres</h2>
+                <p>Find the type of theater experience that speaks to you</p>
+            </div>
+            
+            <div class="types-grid">
+                <div class="type-card">
+                    <div class="type-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3 class="type-title">Musicals</h3>
+                    <p class="type-description">Experience the magic of song and dance with Broadway's best musical productions.</p>
+                </div>
+                
+                <div class="type-card">
+                    <div class="type-icon">
+                        <i class="fas fa-theater-masks"></i>
+                    </div>
+                    <h3 class="type-title">Drama</h3>
+                    <p class="type-description">Powerful performances and compelling stories that will move you.</p>
+                </div>
+                
+                <div class="type-card">
+                    <div class="type-icon">
+                        <i class="fas fa-laugh-squint"></i>
+                    </div>
+                    <h3 class="type-title">Comedy</h3>
+                    <p class="type-description">Laugh out loud with hilarious plays and witty performances.</p>
+                </div>
+                
+                <div class="type-card">
+                    <div class="type-icon">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <h3 class="type-title">Classics</h3>
+                    <p class="type-description">Timeless masterpieces from Shakespeare to modern classics.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Upcoming Shows Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Upcoming Theater Shows</h2>
+                <p>Don't miss these exciting productions coming soon</p>
+            </div>
+            
+            <div class="events-grid">
+                <!-- Upcoming Show 1 -->
+                <div class="event-card">
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Moulin Rouge">
+                    </div>
+                    <div class="event-info">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i> Sep 5 - Nov 30, 2023
+                        </div>
+                        <h3 class="event-title">Moulin Rouge</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> Al Hirschfeld Theatre, NY
+                        </div>
+                        <div class="event-price">From $109.99</div>
+                        <a href="book ticket.html"><button class="btn-book">Get Early Tickets</button></a>
+                    </div>
+                </div>
+                
+                <!-- Upcoming Show 2 -->
+                <div class="event-card">
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1517519014922-8fc06b814a0e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Harry Potter">
+                    </div>
+                    <div class="event-info">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i> Oct 10 - Dec 20, 2023
+                        </div>
+                        <h3 class="event-title">Harry Potter and the Cursed Child</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> Lyric Theatre, NY
+                        </div>
+                        <div class="event-price">From $119.99</div>
+                        <a href="book ticket.html"><button class="btn-book">Get Early Tickets</button></a>
+                    </div>
+                </div>
+                
+                <!-- Upcoming Show 3 -->
+                <div class="event-card">
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1543584756-8f40a802e14d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Hadestown">
+                    </div>
+                    <div class="event-info">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i> Sep 15 - Dec 15, 2023
+                        </div>
+                        <h3 class="event-title">Hadestown</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> Walter Kerr Theatre, NY
+                        </div>
+                        <div class="event-price">From $99.99</div>
+                        <a href="book ticket.html"><button class="btn-book">Get Early Tickets</button></a>
+                    </div>
+                </div>
+                
+                <!-- Upcoming Show 4 -->
+                <div class="event-card">
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Dear Evan Hansen">
+                    </div>
+                    <div class="event-info">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i> Oct 1 - Jan 15, 2024
+                        </div>
+                        <h3 class="event-title">Dear Evan Hansen</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> Music Box Theatre, NY
+                        </div>
+                        <div class="event-price">From $89.99</div>
+                        <a href="book ticket.html"><button class="btn-book">Get Early Tickets</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <h2>Stay Updated on Theater Events</h2>
+            <p>Subscribe to our newsletter for exclusive theater offers, behind-the-scenes content, and more!</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email address">
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>TicketHub</h3>
+                    <p>Your one-stop destination for booking tickets to all your favorite events.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Theater Categories</h3>
+                    <ul>
+                        <li><a href="#">Broadway</a></li>
+                        <li><a href="#">Off-Broadway</a></li>
+                        <li><a href="#">Musicals</a></li>
+                        <li><a href="#">Drama</a></li>
+                        <li><a href="#">Comedy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Theater District, NY</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> theater@tickethub.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 TicketHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

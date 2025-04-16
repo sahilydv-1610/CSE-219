@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Tickets | TicketHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Base Styles */
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #3a7bc8;
+            --secondary: #2c3e50;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --sports-green: #00a651;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        .auth-buttons .btn {
+            margin-left: 15px;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-login {
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-login:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-signup {
+            background-color: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-signup:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        /* Ticket Booking Section */
+        .ticket-booking {
+            padding: 60px 0;
+        }
+        
+        .booking-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 40px;
+        }
+        
+        .event-details {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .event-header {
+            display: flex;
+            margin-bottom: 30px;
+        }
+        
+        .event-image {
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 25px;
+            flex-shrink: 0;
+        }
+        
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .event-info h2 {
+            font-size: 1.75rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .event-teams {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .event-meta i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+        
+        /* Ticket Selection */
+        .ticket-selection {
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .ticket-types {
+            margin-bottom: 30px;
+        }
+        
+        .ticket-type {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .ticket-type:hover {
+            border-color: var(--primary);
+        }
+        
+        .ticket-type.selected {
+            border-color: var(--sports-green);
+            background-color: rgba(0, 166, 81, 0.05);
+        }
+        
+        .ticket-info h4 {
+            font-size: 1.125rem;
+            margin-bottom: 5px;
+        }
+        
+        .ticket-price {
+            font-weight: bold;
+            color: var(--sports-green);
+            font-size: 1.125rem;
+        }
+        
+        .ticket-quantity {
+            display: flex;
+            align-items: center;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            background-color: #f1f5f9;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .quantity-btn:hover {
+            background-color: #e2e8f0;
+        }
+        
+        .quantity-input {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+        
+        /* Order Summary */
+        .order-summary {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+        
+        .summary-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .summary-total {
+            font-weight: bold;
+            font-size: 1.125rem;
+            margin: 20px 0;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--sports-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn-checkout:hover {
+            background-color: #008f47;
+        }
+        
+        /* Payment Section */
+        .payment-section {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .payment-method {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-method:hover {
+            border-color: var(--primary);
+        }
+        
+        .payment-method.selected {
+            border-color: var(--sports-green);
+            background-color: rgba(0, 166, 81, 0.05);
+        }
+        
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .payment-method.selected i {
+            color: var(--sports-green);
+        }
+        
+        .payment-method p {
+            font-weight: 600;
+        }
+        
+        .qr-payment {
+            text-align: center;
+            margin: 30px 0;
+            display: none;
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .payment-complete {
+            text-align: center;
+            display: none;
+        }
+        
+        .payment-complete i {
+            font-size: 4rem;
+            color: var(--sports-green);
+            margin-bottom: 20px;
+        }
+        
+        /* Ticket Confirmation */
+        .ticket-confirmation {
+            display: none;
+            margin-top: 40px;
+        }
+        
+        .confirmation-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .confirmation-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .confirmation-header i {
+            font-size: 3rem;
+            color: var(--sports-green);
+            margin-bottom: 15px;
+        }
+        
+        .confirmation-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .confirmation-header p {
+            color: #7f8c8d;
+        }
+        
+        .ticket-preview {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, white 100%);
+        }
+        
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .ticket-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .ticket-id {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .ticket-body {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+        
+        .ticket-qr {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ticket-qr-code {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 15px;
+        }
+        
+        .ticket-qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .ticket-details h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .ticket-teams {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .ticket-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item h4 {
+            font-size: 0.875rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .info-item p {
+            font-weight: 600;
+        }
+        
+        .ticket-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+        
+        .ticket-note {
+            font-size: 0.875rem;
+            color: #7f8c8d;
+            max-width: 70%;
+        }
+        
+        .confirmation-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--sports-green);
+            color: white;
+            border: 2px solid var(--sports-green);
+        }
+        
+        .btn-primary:hover {
+            background-color: #008f47;
+            border-color: #008f47;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--sports-green);
+            border: 2px solid var(--sports-green);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(0, 166, 81, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .booking-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+                margin-top: 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .event-header {
+                flex-direction: column;
+            }
+            
+            .event-image {
+                width: 100%;
+                height: 200px;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .ticket-body {
+                grid-template-columns: 1fr;
+            }
+            
+            .ticket-qr {
+                order: 2;
+                margin-top: 20px;
+            }
+            
+            .confirmation-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.125rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--primary);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #bbb;
+            font-size: 14px;
+        }    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="home.html" class="logo">
+                    <i class="fas fa-ticket-alt"></i>
+                    TicketHub
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="concerts.html">Concerts</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="theater.html">Theater</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="View My Ticket.html">View My Tickets</a></li>
+                </ul>
+                
+                <div class="auth-buttons">
+                    <a href="Login.html" class="btn btn-login">Login</a>
+                    <a href="register.html" class="btn btn-signup">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Ticket Booking Section -->
+    <section class="ticket-booking">
+        <div class="container">
+            <div class="booking-container">
+                <div class="event-details">
+                    <div class="event-header">
+                        <div class="event-image">
+                            <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Football Game">
+                        </div>
+                        <div class="event-info">
+                            <h2>NFL Championship</h2>
+                            <span class="event-teams">Patriots vs. Cowboys</span>
+                            <div class="event-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Gillette Stadium</span>
+                                <span><i class="fas fa-calendar-alt"></i> June 15, 2025</span>
+                                <span><i class="fas fa-clock"></i> 8:20 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ticket-selection">
+                        <h3 class="section-title">Select Tickets</h3>
+                        <div class="ticket-types">
+                            <div class="ticket-type">
+                                <div class="ticket-info">
+                                    <h4>General Admission</h4>
+                                    <p>Standard seating with great views</p>
+                                </div>
+                                <div class="ticket-price">$129.99</div>
+                                <div class="ticket-quantity">
+                                    <div class="quantity-control">
+                                        <button class="quantity-btn minus">-</button>
+                                        <input type="number" class="quantity-input" value="0" min="0" max="10">
+                                        <button class="quantity-btn plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="ticket-type">
+                                <div class="ticket-info">
+                                    <h4>Premium Seating</h4>
+                                    <p>Center field with best views</p>
+                                </div>
+                                <div class="ticket-price">$199.99</div>
+                                <div class="ticket-quantity">
+                                    <div class="quantity-control">
+                                        <button class="quantity-btn minus">-</button>
+                                        <input type="number" class="quantity-input" value="0" min="0" max="10">
+                                        <button class="quantity-btn plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="ticket-type">
+                                <div class="ticket-info">
+                                    <h4>VIP Experience</h4>
+                                    <p>Includes lounge access and parking</p>
+                                </div>
+                                <div class="ticket-price">$299.99</div>
+                                <div class="ticket-quantity">
+                                    <div class="quantity-control">
+                                        <button class="quantity-btn minus">-</button>
+                                        <input type="number" class="quantity-input" value="0" min="0" max="10">
+                                        <button class="quantity-btn plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-section">
+                            <h3 class="section-title">Payment Method</h3>
+                            <div class="payment-methods">
+                                <div class="payment-method" data-method="credit">
+                                    <i class="fas fa-credit-card"></i>
+                                    <p>Credit Card</p>
+                                </div>
+                                <div class="payment-method" data-method="paypal">
+                                    <i class="fab fa-cc-paypal"></i>
+                                    <p>PayPal</p>
+                                </div>
+                                <div class="payment-method" data-method="qr">
+                                    <i class="fas fa-qrcode"></i>
+                                    <p>QR Payment</p>
+                                </div>
+                            </div>
+                            
+                            <div class="qr-payment">
+                                <h4>Scan QR Code to Complete Payment</h4>
+                                <div class="qr-code">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://tickethub.com/pay/123456" alt="Payment QR Code">
+                                </div>
+                                <p>Scan this QR code with your mobile payment app to complete your purchase.</p>
+                                <button class="btn btn-primary" id="verify-payment">I've Completed Payment</button>
+                            </div>
+                            
+                            <div class="payment-complete">
+                                <i class="fas fa-check-circle"></i>
+                                <h3>Payment Successful!</h3>
+                                <p>Your tickets have been secured. You'll receive a confirmation email shortly.</p>
+                                <button class="btn btn-primary" id="view-ticket">View Your Ticket</button>
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-confirmation">
+                            <div class="confirmation-card" id="ticket-to-print">
+                                <div class="confirmation-header">
+                                    <i class="fas fa-check-circle"></i>
+                                    <h2>Your Ticket is Confirmed!</h2>
+                                    <p>Below is your ticket for the event. You can download it or we'll send it to your email.</p>
+                                </div>
+                                
+                                <div class="ticket-preview">
+                                    <div class="ticket-header">
+                                        <div class="ticket-logo">
+                                            <i class="fas fa-ticket-alt"></i> TicketHub
+                                        </div>
+                                        <div class="ticket-id">
+                                            Order #: TH20250615-1234
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ticket-body">
+                                        <div class="ticket-qr">
+                                            <div class="ticket-qr-code">
+                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://tickethub.com/ticket/TH20250615-1234" alt="Ticket QR Code">
+                                            </div>
+                                            <p>Scan this code at entry</p>
+                                        </div>
+                                        
+                                        <div class="ticket-details">
+                                            <h3>NFL Championship</h3>
+                                            <span class="ticket-teams">Patriots vs. Cowboys</span>
+                                            
+                                            <div class="ticket-info">
+                                                <div class="info-item">
+                                                    <h4>Date & Time</h4>
+                                                    <p>June 15, 2025 at 8:20 PM</p>
+                                                </div>
+                                                <div class="info-item">
+                                                    <h4>Location</h4>
+                                                    <p>Gillette Stadium</p>
+                                                </div>
+                                                <div class="info-item">
+                                                    <h4>Section</h4>
+                                                    <p>Premium Seating (Section 105)</p>
+                                                </div>
+                                                <div class="info-item">
+                                                    <h4>Seats</h4>
+                                                    <p>Row 12, Seats 5-6</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ticket-footer">
+                                        <div class="ticket-note">
+                                            <p>Please arrive at least 1 hour before the event. Present this ticket on your mobile device or printed copy at the entrance.</p>
+                                        </div>
+                                        <div class="ticket-barcode">
+                                            <img src="https://barcode.tec-it.com/barcode.ashx?data=TH20250615-1234&code=Code128&dpi=96" alt="Barcode" style="height: 40px;">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="confirmation-actions">
+                                    <button class="btn btn-primary" id="download-ticket">
+                                        <i class="fas fa-download"></i> Download Ticket
+                                    </button>
+                                    <button class="btn btn-outline" id="back-to-events">
+                                        <i class="fas fa-arrow-left"></i> Back to Events
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <h3 class="summary-title">Order Summary</h3>
+                    <div class="summary-items">
+                        <div class="summary-item">
+                            <span>General Admission x 0</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Premium Seating x 0</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>VIP Experience x 0</span>
+                            <span>$0.00</span>
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <span>Service Fee</span>
+                        <span>$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Tax</span>
+                        <span>$0.00</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span>$0.00</span>
+                    </div>
+                    <button class="btn-checkout" id="proceed-to-payment">Proceed to Payment</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>TicketHub</h3>
+                    <p>Your one-stop destination for booking tickets to all your favorite sports events.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="concerts.html">Concerts</a></li>
+                        <li><a href="sports.html">Sports</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Sports</h3>
+                    <ul>
+                        <li><a href="#">Football</a></li>
+                        <li><a href="#">Basketball</a></li>
+                        <li><a href="#">Baseball</a></li>
+                        <li><a href="#">Hockey</a></li>
+                        <li><a href="#">Soccer</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Sports Ave, NY</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> sports@tickethub.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 TicketHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ticket quantity controls
+            const quantityControls = document.querySelectorAll('.quantity-control');
+            
+            quantityControls.forEach(control => {
+                const minusBtn = control.querySelector('.minus');
+                const plusBtn = control.querySelector('.plus');
+                const input = control.querySelector('.quantity-input');
+                
+                minusBtn.addEventListener('click', function() {
+                    let value = parseInt(input.value);
+                    if (value > 0) {
+                        input.value = value - 1;
+                        updateOrderSummary();
+                    }
+                });
+                
+                plusBtn.addEventListener('click', function() {
+                    let value = parseInt(input.value);
+                    if (value < parseInt(input.max)) {
+                        input.value = value + 1;
+                        updateOrderSummary();
+                    }
+                });
+                
+                input.addEventListener('change', function() {
+                    let value = parseInt(this.value);
+                    if (isNaN(value) || value < 0) {
+                        this.value = 0;
+                    } else if (value > parseInt(this.max)) {
+                        this.value = this.max;
+                    }
+                    updateOrderSummary();
+                });
+            });
+            
+            // Update order summary
+            function updateOrderSummary() {
+                const ticketTypes = document.querySelectorAll('.ticket-type');
+                const summaryItems = document.querySelector('.summary-items');
+                let subtotal = 0;
+                
+                // Clear existing items
+                summaryItems.innerHTML = '';
+                
+                // Add each ticket type to summary if quantity > 0
+                ticketTypes.forEach(ticket => {
+                    const quantity = parseInt(ticket.querySelector('.quantity-input').value);
+                    const price = parseFloat(ticket.querySelector('.ticket-price').textContent.replace('$', ''));
+                    const name = ticket.querySelector('h4').textContent;
+                    
+                    if (quantity > 0) {
+                        const itemTotal = quantity * price;
+                        subtotal += itemTotal;
+                        
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'summary-item';
+                        itemElement.innerHTML = `
+                            <span>${name} x ${quantity}</span>
+                            <span>$${itemTotal.toFixed(2)}</span>
+                        `;
+                        summaryItems.appendChild(itemElement);
+                    }
+                });
+                
+                // Calculate fees and total
+                const serviceFee = subtotal * 0.1; // 10% service fee
+                const tax = subtotal * 0.08; // 8% tax
+                const total = subtotal + serviceFee + tax;
+                
+                // Update fees and total
+                document.querySelector('.summary-item:nth-last-child(2) span:last-child').textContent = `$${serviceFee.toFixed(2)}`;
+                document.querySelector('.summary-item:nth-last-child(1) span:last-child').textContent = `$${tax.toFixed(2)}`;
+                document.querySelector('.summary-total span:last-child').textContent = `$${total.toFixed(2)}`;
+                
+                // Enable/disable checkout button
+                const checkoutBtn = document.getElementById('proceed-to-payment');
+                checkoutBtn.disabled = subtotal === 0;
+            }
+            
+            // Proceed to payment
+            document.getElementById('proceed-to-payment').addEventListener('click', function() {
+                document.querySelector('.ticket-selection').style.display = 'none';
+                document.querySelector('.payment-section').style.display = 'block';
+                
+                // Scroll to payment section
+                document.querySelector('.payment-section').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Payment method selection
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    paymentMethods.forEach(m => m.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Show appropriate payment UI
+                    if (this.dataset.method === 'qr') {
+                        document.querySelector('.qr-payment').style.display = 'block';
+                    } else {
+                        document.querySelector('.qr-payment').style.display = 'none';
+                    }
+                });
+            });
+            
+            // Verify payment (simulated)
+            document.getElementById('verify-payment').addEventListener('click', function() {
+                document.querySelector('.qr-payment').style.display = 'none';
+                document.querySelector('.payment-complete').style.display = 'block';
+            });
+            
+            // View ticket after payment
+            document.getElementById('view-ticket').addEventListener('click', function() {
+                document.querySelector('.payment-section').style.display = 'none';
+                document.querySelector('.ticket-confirmation').style.display = 'block';
+                
+                // Scroll to ticket confirmation
+                document.querySelector('.ticket-confirmation').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Download ticket as PDF
+            document.getElementById('download-ticket').addEventListener('click', function() {
+                const ticketElement = document.getElementById('ticket-to-print');
+                
+                // Use html2canvas to capture the ticket
+                html2canvas(ticketElement, {
+                    scale: 2, // Higher quality
+                    logging: false,
+                    useCORS: true
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgWidth = 190; // A4 width in mm (210 - 20mm margins)
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    
+                    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                    pdf.save('TicketHub-Ticket-NFL-Championship.pdf');
+                });
+            });
+            
+            // Back to events
+            document.getElementById('back-to-events').addEventListener('click', function() {
+                window.location.href = 'sports.html';
+            });
+        });
+    </script>
+</body>
+</html>
